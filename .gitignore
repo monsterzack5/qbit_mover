@@ -22,3 +22,6 @@ var/
 wheels/
 
 
+.env
+*.json
+temp_*/
