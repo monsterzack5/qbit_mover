@@ -2,6 +2,7 @@ import requests
 
 # Union might be needed if fields can be optional or have multiple types
 from typing import TypedDict, List, Union
+from config import Config
 
 
 class TorrentInfo(TypedDict):
@@ -73,6 +74,7 @@ class QbitInterface:
     __base_url = ""
     header_plain = {"Content-Type": "text/plain; charset=UTF-8"}
     header_url_encoded = {"Content-Type": "application/x-www-form-urlencoded"}
+    env = Config()
 
     def __init__(self, username: str, password: str, base_url: str):
 
@@ -121,11 +123,25 @@ class QbitInterface:
         filtered: List[TorrentInfo] = []
 
         for torrent in torrents:
-            all_tags = self.convert_tags_to_array(torrent[tag])
+            all_tags = self.convert_tags_to_array(torrent["tags"])
             if tag in all_tags:
                 filtered.append(torrent)
 
         return filtered
+    
+    def get_unmoved_not_failed_tv_shows(self):
+        # /api/v2/torrents/info?filter=downloading&category=sample%20category&sort=ratio
+        torrents = self.get_all_torrents()
+
+        filtered: List[TorrentInfo] = []
+
+        for torrent in torrents:
+            all_tags = self.convert_tags_to_array(torrent["tags"])
+            if self.env.tv_show_tag in all_tags and not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
+                filtered.append(torrent)
+
+        return filtered
+
 
     def get_all_torrents(self) -> List[TorrentInfo]:
         # /api/v2/torrents/info
@@ -148,6 +164,9 @@ class QbitInterface:
             "hashes": f"{torrent_hash}",
             "tags": f"{tag}"
         }
+
+        if self.env.dry_run:
+            return True
 
         rc = self.__post("/api/v2/torrents/addTags",
                          self.header_url_encoded, payload)
