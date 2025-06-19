@@ -116,46 +116,8 @@ class QbitInterface:
                 self.__cookies = {"SID": auth_key.split("=")[1]}
                 break
 
-    def get_torrents_with_tag(self, tag: str):
-        # /api/v2/torrents/info?filter=downloading&category=sample%20category&sort=ratio
-        torrents = self.get_all_torrents()
-
-        filtered: List[TorrentInfo] = []
-
-        for torrent in torrents:
-            all_tags = self.convert_tags_to_array(torrent["tags"])
-            if tag in all_tags:
-                filtered.append(torrent)
-
-        return filtered
-    
-    def get_unmoved_not_failed_tv_shows(self):
-        # /api/v2/torrents/info?filter=downloading&category=sample%20category&sort=ratio
-        torrents = self.get_all_torrents()
-
-        filtered: List[TorrentInfo] = []
-
-        for torrent in torrents:
-            all_tags = self.convert_tags_to_array(torrent["tags"])
-            if self.env.tv_show_tag in all_tags and not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
-                filtered.append(torrent)
-
-        return filtered
-    
-    def get_unmoved_not_failed_movies(self):
-        torrents = self.get_all_torrents()
-
-        filtered: List[TorrentInfo] = []
-
-        for torrent in torrents:
-            all_tags = self.convert_tags_to_array(torrent["tags"])
-            if self.env.movie_tag in all_tags and not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
-                filtered.append(torrent)
-
-        return filtered
-    
     def get_unmoved_not_failed_torrents(self):
-        torrents = self.get_all_torrents()
+        torrents = self.get_downloaded_torrents()
 
         filtered: List[TorrentInfo] = []
 
@@ -165,7 +127,6 @@ class QbitInterface:
                 filtered.append(torrent)
 
         return filtered
-
 
     def get_all_torrents(self) -> List[TorrentInfo]:
         # /api/v2/torrents/info

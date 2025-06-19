@@ -2,22 +2,15 @@
 # On an interval:
 # - Check for torrents that are completed
 # - If they are completed, (and moved properly)
-# - Rsync them to jupiter
-# - and add the tag "Done"
-# - Such that we're not gonna try and copy them again
-#
-# Tags:
-# - TV_Show
-# - Movie
-# - Moved
-import sys
+# - Rsync them to a destination
+# - and add the moved tag
+# - and respect season info
 
 from qbit_api import QbitInterface, TorrentInfo
 from pathlib import Path
 from rsync import rsync_copy, RsyncStatus
 from tv_show_info import get_tv_show_info, EpisodeInfo
 from config import Config
-
 import time
 
 env = Config()
@@ -31,14 +24,8 @@ def handle_tv_show(torrent: TorrentInfo) -> bool:
 
     torrent_path = torrent["root_path"]
 
-    # Convert torrent_path to be not an absolute path (if it is)
     if torrent_path.startswith("/"):
         torrent_path = torrent_path[1::]
-
-    # Transfer the contents of the torrent into the specified SEASON
-
-    print(f"env: {env.rsync_from_path_prepend}")
-    print(f"path: {torrent_path}")
 
     from_path = f"{env.rsync_from_path_host}:{env.rsync_from_path_prepend}/{torrent_path}/"
     to_path = f"{env.rsync_to_path_tv_shows}/{show_info.show_name}/S{show_info.season}"
@@ -53,7 +40,7 @@ def handle_tv_show(torrent: TorrentInfo) -> bool:
 def handle_movie(torrent: TorrentInfo) -> bool:
 
     torrent_path = torrent["root_path"]
-    
+
     if torrent_path.startswith("/"):
         torrent_path = torrent_path[1::]
 
@@ -64,8 +51,9 @@ def handle_movie(torrent: TorrentInfo) -> bool:
 
     if did_copy == RsyncStatus.FAILED:
         return False
-    
+
     return True
+
 
 def main():
     if env.dry_run:
@@ -93,8 +81,6 @@ def main():
             qbit.append_tag_to_torrent(torrent["hash"], env.moved_tag)
 
         time.sleep(600)
-
-        print("Done!")
 
 
 if __name__ == "__main__":
