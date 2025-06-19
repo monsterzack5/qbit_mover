@@ -141,6 +141,30 @@ class QbitInterface:
                 filtered.append(torrent)
 
         return filtered
+    
+    def get_unmoved_not_failed_movies(self):
+        torrents = self.get_all_torrents()
+
+        filtered: List[TorrentInfo] = []
+
+        for torrent in torrents:
+            all_tags = self.convert_tags_to_array(torrent["tags"])
+            if self.env.movie_tag in all_tags and not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
+                filtered.append(torrent)
+
+        return filtered
+    
+    def get_unmoved_not_failed_torrents(self):
+        torrents = self.get_all_torrents()
+
+        filtered: List[TorrentInfo] = []
+
+        for torrent in torrents:
+            all_tags = self.convert_tags_to_array(torrent["tags"])
+            if not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
+                filtered.append(torrent)
+
+        return filtered
 
 
     def get_all_torrents(self) -> List[TorrentInfo]:

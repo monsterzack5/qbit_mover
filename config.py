@@ -13,10 +13,12 @@ def _ensure_expected_env_vars() -> None | NoReturn:
     rc |= len(os.getenv("QBIT_PASSWORD", "")) == 0
     rc |= len(os.getenv("RSYNC_FROM_PATH_PREPEND", "")) == 0
     rc |= len(os.getenv("RSYNC_FROM_PATH_HOST", "")) == 0
-    rc |= len(os.getenv("RSYNC_TO_PATH", "")) == 0
+    rc |= len(os.getenv("RSYNC_TO_PATH_MOVIES", "")) == 0
+    rc |= len(os.getenv("RSYNC_TO_PATH_TV_SHOWS", "")) == 0
     rc |= len(os.getenv("MOVIE_TAG", "")) == 0
     rc |= len(os.getenv("TV_SHOW_TAG", "")) == 0
     rc |= len(os.getenv("MOVED_TAG", "")) == 0
+    rc |= len(os.getenv("FAILED_TAG", "")) == 0
 
     if rc:
         print("Fatal: Env vars are not correct")
@@ -58,8 +60,12 @@ class Config:
         return os.getenv("RSYNC_FROM_PATH_HOST", "")
 
     @property
-    def rsync_to_path(self) -> str:
-        return os.getenv("RSYNC_TO_PATH", "")
+    def rsync_to_path_movies(self) -> str:
+        return os.getenv("RSYNC_TO_PATH_MOVIES", "")
+
+    @property
+    def rsync_to_path_tv_shows(self) -> str:
+        return os.getenv("RSYNC_TO_PATH_TV_SHOWS", "")
 
     @property
     def movie_tag(self) -> str:
