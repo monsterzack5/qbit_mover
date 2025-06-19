@@ -3,7 +3,7 @@
 Moves and reorganizes linux ISOs with special handling for movies and tv show seasons.
 
 ## Naming
-Torrents should be renamed before being given a `TV_Show` or `Movie` tag. Movie names should be cleaned, but otherwise have no special handling. TV Show names should be cleaned, and then have their season / episode appended onto the end such as: `/S01` or `/S01E05`. Tv shows will be transferred in this structure Show_Name/S01 etc. For Example:
+Torrents should be renamed before being given a `TV_Show` or `Movie` tag. Movie names should be cleaned, but otherwise have no special handling. TV Show names should be cleaned, and then have their season / episode appended onto the end such as: `/S01` or `/S01E05`. Tv shows will be transferred using that metadata. For example:
 
 On Qbit:
 ```
