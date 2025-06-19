@@ -4,6 +4,8 @@ import os
 import sys
 
 # TODO: Don't have the env names in the file twice
+
+
 def _ensure_expected_env_vars() -> None | NoReturn:
     rc = 0
     rc |= len(os.getenv("QBIT_URL", "")) == 0
@@ -70,3 +72,14 @@ class Config:
     @property
     def moved_tag(self) -> str:
         return os.getenv("MOVED_TAG", "")
+
+    @property
+    def failed_tag(self) -> str:
+        return os.getenv("FAILED_TAG", "")
+
+    @property
+    def dry_run(self) -> bool:
+        dry = os.getenv("DRY_RUN", "")
+        if dry.lower() == "true":
+            return True
+        return False
