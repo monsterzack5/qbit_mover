@@ -28,11 +28,6 @@ Cool Show
             (contains) -> ./S02E01.The.1st.Episode.mp4
             (contains) -> ./S02E02.The.2ndst.Episode.mp4
             (contains) -> ./S02E03.The.3ndstest.Episode.mp4
-    
-Cool Show S02E01 The 1st Episode/S01E01 (contains) ./S01E01.The.1st.Episode.mp4
-Cool Show S02E02 The 2ndst Episode/S01E02 (contains) ./S01E02.The.2ndst.Episode.mp4
-Cool Show S02E03 The 3ndstest Episode/S01E03 (contains) ./S01E03.The.3ndstest.Episode.mp4
-
 ```
 
 ## Tags
