@@ -3,8 +3,8 @@ import json
 
 from logger import Logger
 from config import Config
-from typing import Optional
-from typing import TypedDict, Literal
+from typing import Optional, TypedDict
+from enum import Enum
 
 logger = Logger()
 env = Config()
@@ -31,6 +31,14 @@ class LlamaApiResponse(TypedDict):
     prompt_eval_duration: int
     eval_count: int
     eval_duration: int
+
+
+class TvShowOrMovie(Enum):
+    TvShow = 1
+    Movie = 2
+
+    def __str__(self):
+        return self.name
 
 
 headers = {
@@ -65,15 +73,33 @@ Should Become
 
 You should respond in JSON ONLY and ONLY respond with the new_name key. You should leave out any ` characters.
 """
+MOVIE_SYSTEM_PROMPT = """
+You are a AI Agent tasked with renaming titles of movie files to make the name cleaner and more accurate. If present, you should include the year the movie was released, and if it was a special edition, directors cut, or any other special common qualifier.
+
+For example:
+`The.Best.Movie.Ever (2022) (1080p AMZN WEB-DL x265 HEVC 10bit EAC3 5.1) [ZxD]`
+Should Become
+```json
+{ "new_name": "The Best Movie Ever (2022)" }
+```
+and
+`Mad Wealthy People 2018 Directors Cut (1080p BluRay x265 HEVC 10bit AAC 5.1) [DxM]`
+Should Become
+```
+{ "new_name": "Mad Wealthy People (2018) Directors Cut" }
+```
+
+You should respond in JSON ONLY and ONLY respond with the new_name key. You should leave out any ` characters.
+"""
 
 
-def ai_clean_and_format_tv_show(torrent_name: str) -> Optional[str]:
+def ai_rename(content_type: TvShowOrMovie, torrent_name: str) -> Optional[str]:
     payload = {
         "model": "llama3.1",
         "messages": [
             {
                 "role": "system",
-                "content": TV_SHOW_SYSTEM_PROMPT
+                "content": TV_SHOW_SYSTEM_PROMPT if content_type == TvShowOrMovie.TvShow else MOVIE_SYSTEM_PROMPT
             },
             {
                 "role": "user",
@@ -83,7 +109,7 @@ def ai_clean_and_format_tv_show(torrent_name: str) -> Optional[str]:
         "stream": False
     }
 
-    logger.log(f"Ai Renaming: {torrent_name}")
+    logger.log(f"Running llama3.1, type = {content_type}")
 
     resp = requests.post(env.ollama_url, json=payload, headers=headers)
 
@@ -103,10 +129,3 @@ def ai_clean_and_format_tv_show(torrent_name: str) -> Optional[str]:
         return None
 
     return new_name.get("new_name", None)
-
-
-if __name__ == "__main__":
-    new_name = ai_clean_and_format_tv_show(
-        "Unknown.S2E19.1080p.WEB.H264-SuccessfulCrab[TGx]")
-
-    print(f"new_name: {new_name}")

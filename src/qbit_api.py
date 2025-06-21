@@ -165,28 +165,47 @@ class QbitInterface:
         }
         encoded_payload = urlencode(payload)
 
+        logger.log(f"Renaming \"{torrent["name"]}\" to \"{new_name}\"")
+
         if env.dry_run:
             return
-        logger.log(f"Renaming \"{torrent["name"]}\" to \"{new_name}\"")
         self.__post("/api/v2/torrents/rename",
                     self.header_url_encoded, encoded_payload)
 
-    def append_tag_to_torrent(self, torrent_hash: str, tag: str) -> bool:
+    def append_tag_to_torrent(self, torrent: TorrentInfo, tag: str) -> bool:
         # /api/v2/torrents/addTags
         # hashes=8c212779b4abde7c6bc608063a0d008b7e40ce32|284b83c9c7935002391129fd97f43db5d7cc2ba0&tags=TagName1,TagName2
 
         payload = {
-            "hashes": f"{torrent_hash}",
-            "tags": f"{tag}"
+            "hashes": torrent["hash"],
+            "tags":   tag
         }
 
         if env.dry_run:
             return True
 
+        encoded_payload = urlencode(payload)
+
+        logger.log(f"Adding {tag} to {torrent["name"]}")
+
         rc = self.__post("/api/v2/torrents/addTags",
-                         self.header_url_encoded, payload)
+                         self.header_url_encoded, encoded_payload)
 
         return rc.status_code == 200
+
+    def remove_tag_from_torrent(self, torrent_hash: str, tag: str) -> bool:
+        payload = {
+            "hashes": torrent_hash,
+            "tags": tag
+        }
+
+        if env.dry_run:
+            return True
+
+        encoded_payload = urlencode(payload)
+
+        rc = self.__post("/api/v2/torrents/removeTags",
+                         self.header_url_encoded, encoded_payload)
 
     def get_downloaded_torrents(self) -> List[TorrentInfo]:
         all_torrents = self.get_all_torrents()

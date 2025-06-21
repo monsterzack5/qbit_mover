@@ -11,7 +11,7 @@ from rsync import rsync_copy, RsyncStatus
 from tv_show_info import get_tv_show_info
 from config import Config
 from logger import Logger
-from ollama import ai_clean_and_format_tv_show
+from ollama import ai_rename, TvShowOrMovie
 import time
 
 env = Config()
@@ -64,7 +64,7 @@ def check_tags(qbit: QbitInterface):
     required_tags = [
         env.tv_show_tag,
         env.moved_tag,
-        env.moved_tag,
+        env.movie_tag,
         env.failed_tag,
         env.ai_tag
     ]
@@ -100,26 +100,26 @@ def main():
 
             # Ai Stuff
             if env.ai_tag in tags:
-                if env.tv_show_tag and not env.movie_tag in tags:
-                    new_torrent_name = ai_clean_and_format_tv_show(
-                        torrent["name"])
-                    if new_torrent_name is None:
-                        did_handle = False
-                        continue
-                    qbit.rename_torrent(torrent, new_torrent_name)
-                    # Handle moving on next iteration
-                    continue
-                    # Should be remove the AI tag?
-                if env.movie_tag in tags:
-                    logger.warn(
-                        f"AI Tag on torrent marked as Movie, we cannot handle renaming movies currently. Torrent name: {torrent["name"]}")
+                new_torrent_name = None
+                if env.tv_show_tag in tags and not env.movie_tag in tags:
+                    new_torrent_name = ai_rename(TvShowOrMovie.TvShow,
+                                                 torrent["name"])
+                elif env.movie_tag in tags and not env.tv_show_tag in tags:
+                    new_torrent_name = ai_rename(
+                        TvShowOrMovie.Movie, torrent["name"])
+
+                if new_torrent_name is None:
                     did_handle = False
                     continue
+                qbit.rename_torrent(torrent, new_torrent_name)
+                # Handle moving on next iteration
+                qbit.remove_tag_from_torrent(torrent["hash"], env.ai_tag)
+                continue
 
             # Regular moving
-            if env.movie_tag and not env.tv_show_tag in tags:
+            if env.movie_tag in tags and env.tv_show_tag not in tags:
                 did_handle = handle_movie(torrent)
-            elif env.tv_show_tag and not env.movie_tag in tags:
+            elif env.tv_show_tag in tags and env.movie_tag not in tags:
                 did_handle = handle_tv_show(torrent)
             else:
                 continue
@@ -127,9 +127,9 @@ def main():
             # Failure
             if not did_handle:
                 logger.warn(f"failed to handle {torrent["name"]}")
-                qbit.append_tag_to_torrent(torrent["hash"], env.failed_tag)
+                qbit.append_tag_to_torrent(torrent, env.failed_tag)
                 continue
-            qbit.append_tag_to_torrent(torrent["hash"], env.moved_tag)
+            qbit.append_tag_to_torrent(torrent, env.moved_tag)
         logger.log("Main loop done")
         time.sleep(600)
 

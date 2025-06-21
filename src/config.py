@@ -67,7 +67,7 @@ class Config:
 
     @property
     def movie_tag(self) -> str:
-        return "Movie"
+        return "Movies"
 
     @property
     def tv_show_tag(self) -> str:
