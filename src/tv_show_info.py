@@ -44,7 +44,6 @@ def get_tv_show_info(name: str) -> Optional[EpisodeInfo]:
         return EpisodeInfo(split[0], season, "")
 
     if info[season_digits + 1] != "e":
-        print("next char is not e")
         return None
 
     season_info_offset = len(season) + 1

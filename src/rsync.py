@@ -16,7 +16,6 @@ def rsync_copy(from_str: str, to_str: str) -> RsyncStatus:
     command = ["rsync", f"-aqs", "--mkpath",
                f"{from_str}", f"{to_str}"]
 
-    print(f"Rsync command: {command}")
     rc = __cmd_run(command)
     if rc == 0:
         return RsyncStatus.FINISHED
@@ -24,7 +23,6 @@ def rsync_copy(from_str: str, to_str: str) -> RsyncStatus:
 
 
 def __cmd_run(command: list[str]) -> int:
-
     if env.dry_run:
         return 0
 

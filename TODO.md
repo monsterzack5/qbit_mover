@@ -1,12 +1,9 @@
-- stuff
 - add check function to verify we have the correct tags available
-- verify that we have the correct env args
 - add cli args
 - prefer cli args vs .env
 - main loop, so we run forever
     - probably add some config options to do that
 - more error checking, esp around moving stuff
-- logger
 - paths
 - copy all rsync commands to a queue, prioritize s01
-- don't allow both movie and tv_show in the same torrent
+- log level

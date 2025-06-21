@@ -19,6 +19,7 @@ def _ensure_expected_env_vars() -> None | NoReturn:
     rc |= len(os.getenv("TV_SHOW_TAG", "")) == 0
     rc |= len(os.getenv("MOVED_TAG", "")) == 0
     rc |= len(os.getenv("FAILED_TAG", "")) == 0
+    rc |= len(os.getenv("LOG_FILE", "")) == 0
 
     if rc:
         print("Fatal: Env vars are not correct")
@@ -82,6 +83,10 @@ class Config:
     @property
     def failed_tag(self) -> str:
         return os.getenv("FAILED_TAG", "")
+
+    @property
+    def log_file(self) -> str:
+        return os.getenv("LOG_FILE", "")
 
     @property
     def dry_run(self) -> bool:

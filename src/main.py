@@ -11,9 +11,11 @@ from pathlib import Path
 from rsync import rsync_copy, RsyncStatus
 from tv_show_info import get_tv_show_info, EpisodeInfo
 from config import Config
+from logger import Logger
 import time
 
 env = Config()
+logger = Logger()
 
 
 def handle_tv_show(torrent: TorrentInfo) -> bool:
@@ -33,6 +35,7 @@ def handle_tv_show(torrent: TorrentInfo) -> bool:
     did_copy = rsync_copy(from_path, to_path)
 
     if not did_copy:
+        logger.warn(f"Failed to rsync tv_show |{from_path}| to |{to_path}|")
         return False
     return True
 
@@ -50,6 +53,7 @@ def handle_movie(torrent: TorrentInfo) -> bool:
     did_copy = rsync_copy(from_path, to_path)
 
     if did_copy == RsyncStatus.FAILED:
+        logger.warn(f"Failed to rsync movie |{from_path}| to |{to_path}|")
         return False
 
     return True
@@ -57,7 +61,7 @@ def handle_movie(torrent: TorrentInfo) -> bool:
 
 def main():
     if env.dry_run:
-        print("DRY RUN")
+        logger.warn("DRY RUN")
 
     qbit = QbitInterface(env.qbit_username, env.qbit_password, env.qbit_url)
 

@@ -3,6 +3,10 @@ import requests
 # Union might be needed if fields can be optional or have multiple types
 from typing import TypedDict, List, Union
 from config import Config
+from logger import Logger
+
+logger = Logger()
+env = Config()
 
 
 class TorrentInfo(TypedDict):
@@ -87,7 +91,7 @@ class QbitInterface:
         resp = requests.get(url, headers=headers, cookies=self.__cookies)
 
         if resp.status_code != 200:
-            print(
+            logger.warn(
                 f"Warning: Status code != 200, Get: {url} Status Code: ${resp.status_code}")
         return resp
 
@@ -97,7 +101,7 @@ class QbitInterface:
                              headers=headers, data=payload, cookies=self.__cookies)
 
         if resp.status_code != 200:
-            print(
+            logger.warn(
                 f"Warning: Status code != 200, Post: {url} Status Code: {resp.status_code}")
         return resp
 
@@ -112,7 +116,7 @@ class QbitInterface:
         for header, value in resp.headers.items():
             if header == "set-cookie":
                 auth_key = value.split(";")[0]
-                print(f"Session key is: {auth_key}")
+                logger.log(f"Session key is: {auth_key}")
                 self.__cookies = {"SID": auth_key.split("=")[1]}
                 break
 
@@ -151,6 +155,9 @@ class QbitInterface:
         }
 
         if self.env.dry_run:
+            return True
+
+        if env.dry_run:
             return True
 
         rc = self.__post("/api/v2/torrents/addTags",
