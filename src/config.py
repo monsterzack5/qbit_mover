@@ -15,11 +15,8 @@ def _ensure_expected_env_vars() -> None | NoReturn:
     rc |= len(os.getenv("RSYNC_FROM_PATH_HOST", "")) == 0
     rc |= len(os.getenv("RSYNC_TO_PATH_MOVIES", "")) == 0
     rc |= len(os.getenv("RSYNC_TO_PATH_TV_SHOWS", "")) == 0
-    rc |= len(os.getenv("MOVIE_TAG", "")) == 0
-    rc |= len(os.getenv("TV_SHOW_TAG", "")) == 0
-    rc |= len(os.getenv("MOVED_TAG", "")) == 0
-    rc |= len(os.getenv("FAILED_TAG", "")) == 0
     rc |= len(os.getenv("LOG_FILE", "")) == 0
+    rc |= len(os.getenv("OLLAMA_URL", "")) == 0
 
     if rc:
         print("Fatal: Env vars are not correct")
@@ -70,23 +67,31 @@ class Config:
 
     @property
     def movie_tag(self) -> str:
-        return os.getenv("MOVIE_TAG", "")
+        return "Movie"
 
     @property
     def tv_show_tag(self) -> str:
-        return os.getenv("TV_SHOW_TAG", "")
+        return "TV_Show"
 
     @property
     def moved_tag(self) -> str:
-        return os.getenv("MOVED_TAG", "")
+        return "Moved"
 
     @property
     def failed_tag(self) -> str:
-        return os.getenv("FAILED_TAG", "")
+        return "Failed"
 
     @property
     def log_file(self) -> str:
         return os.getenv("LOG_FILE", "")
+
+    @property
+    def ai_tag(self) -> str:
+        return "AI"
+
+    @property
+    def ollama_url(self) -> str:
+        return os.getenv("OLLAMA_URL", "")
 
     @property
     def dry_run(self) -> bool:

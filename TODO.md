@@ -7,3 +7,7 @@
 - paths
 - copy all rsync commands to a queue, prioritize s01
 - log level
+- handle COMPLETE torrents
+- AI Consensus
+- lots o error checking in qbit_api
+- properly url-encode in qbit

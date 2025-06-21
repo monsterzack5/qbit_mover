@@ -4,6 +4,7 @@ import requests
 from typing import TypedDict, List, Union
 from config import Config
 from logger import Logger
+from urllib.parse import urlencode
 
 logger = Logger()
 env = Config()
@@ -145,6 +146,31 @@ class QbitInterface:
 
         return all_tags
 
+    def get_all_tags(self) -> List[str]:
+        # /api/v2/tags
+        return self.__get("/api/v2/torrents/tags").json()
+
+    def create_tag(self, new_tag: str):
+        payload = f"tags={new_tag}"
+        if env.dry_run:
+            return
+        logger.log(f"Creating tag: {new_tag} in qbittorrent")
+        self.__post("/api/v2/torrents/createTags",
+                    self.header_url_encoded, payload)
+
+    def rename_torrent(self, torrent: TorrentInfo, new_name: str):
+        payload = {
+            "hash": torrent["hash"],
+            "name": new_name
+        }
+        encoded_payload = urlencode(payload)
+
+        if env.dry_run:
+            return
+        logger.log(f"Renaming \"{torrent["name"]}\" to \"{new_name}\"")
+        self.__post("/api/v2/torrents/rename",
+                    self.header_url_encoded, encoded_payload)
+
     def append_tag_to_torrent(self, torrent_hash: str, tag: str) -> bool:
         # /api/v2/torrents/addTags
         # hashes=8c212779b4abde7c6bc608063a0d008b7e40ce32|284b83c9c7935002391129fd97f43db5d7cc2ba0&tags=TagName1,TagName2
@@ -153,9 +179,6 @@ class QbitInterface:
             "hashes": f"{torrent_hash}",
             "tags": f"{tag}"
         }
-
-        if self.env.dry_run:
-            return True
 
         if env.dry_run:
             return True

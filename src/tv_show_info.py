@@ -41,7 +41,7 @@ def get_tv_show_info(name: str) -> Optional[EpisodeInfo]:
         return None
 
     if len(info) == len(season) + 1:
-        return EpisodeInfo(split[0], season, "")
+        return _normalize(EpisodeInfo(split[0], season, ""))
 
     if info[season_digits + 1] != "e":
         return None
@@ -57,4 +57,19 @@ def get_tv_show_info(name: str) -> Optional[EpisodeInfo]:
         # Extra data after E000...
         return None
 
-    return EpisodeInfo(split[0], season, episode)
+    return _normalize(EpisodeInfo(split[0], season, episode))
+
+
+def _normalize(info: EpisodeInfo) -> EpisodeInfo:
+    def norm(num: int) -> str:
+        if num <= 9:
+            return f"0{num}"
+        else:
+            return f"{num}"
+
+    new_season = f"{norm(int(info.season))}"
+    new_episode = info.episode
+    if len(info.episode) > 0:
+        new_episode = f"{norm(int(info.episode))}"
+
+    return EpisodeInfo(info.show_name, new_season, new_episode)
