@@ -11,3 +11,4 @@
 - lots o error checking in qbit_api
 - properly url-encode in qbit
 - check target for similar torrents
+- ai tag auto catagorize?

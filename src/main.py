@@ -12,6 +12,8 @@ from tv_show_info import get_tv_show_info
 from config import Config
 from logger import Logger
 from ollama import ai_rename, TvShowOrMovie
+from typing import Optional
+from validation import check_for_case_issues
 import time
 
 env = Config()
@@ -41,7 +43,6 @@ def handle_tv_show(torrent: TorrentInfo) -> bool:
 
 
 def handle_movie(torrent: TorrentInfo) -> bool:
-
     torrent_path = torrent["root_path"]
 
     if torrent_path.startswith("/"):
@@ -77,6 +78,21 @@ def check_tags(qbit: QbitInterface):
             logger.log(f"Adding missing tag to qbittorrent: {tag}")
 
 
+def handle_ai_tag(torrent: TorrentInfo, tags: set[str]) -> Optional[str]:
+    new_torrent_name = None
+    if env.tv_show_tag in tags and not env.movie_tag in tags:
+        new_torrent_name = ai_rename(TvShowOrMovie.TvShow,
+                                     torrent["name"])
+    elif env.movie_tag in tags and not env.tv_show_tag in tags:
+        new_torrent_name = ai_rename(
+            TvShowOrMovie.Movie, torrent["name"])
+
+    if new_torrent_name is None:
+        return None
+
+    return new_torrent_name
+
+
 def main():
     if env.dry_run:
         logger.warn("DRY RUN")
@@ -86,42 +102,35 @@ def main():
     check_tags(qbit)
 
     while True:
+        check_for_case_issues(qbit)
 
-        all_torrents = qbit.get_unmoved_not_failed_torrents()
+        useful_torrents = qbit.get_unmoved_not_failed_torrents()
 
         did_handle = False
-
-        for torrent in all_torrents:
+        for torrent in useful_torrents:
             tags = qbit.convert_tags_to_array(torrent["tags"])
 
             # Don't touch moved or failed torrents
-            if (env.moved_tag or env.failed_tag) in tags:
-                continue
+            # if (env.moved_tag or env.failed_tag) in tags:
+            # continue
 
             # Ai Stuff
             if env.ai_tag in tags:
-                new_torrent_name = None
-                if env.tv_show_tag in tags and not env.movie_tag in tags:
-                    new_torrent_name = ai_rename(TvShowOrMovie.TvShow,
-                                                 torrent["name"])
-                elif env.movie_tag in tags and not env.tv_show_tag in tags:
-                    new_torrent_name = ai_rename(
-                        TvShowOrMovie.Movie, torrent["name"])
-
+                new_torrent_name = handle_ai_tag(torrent, tags)
                 if new_torrent_name is None:
                     did_handle = False
-                    continue
-                qbit.rename_torrent(torrent, new_torrent_name)
-                # Handle moving on next iteration
-                qbit.remove_tag_from_torrent(torrent["hash"], env.ai_tag)
-                continue
+                else:
+                    qbit.rename_torrent(torrent, new_torrent_name)
+                    # Handle moving on next iteration
+                    qbit.remove_tag_from_torrent(torrent["hash"], env.ai_tag)
 
             # Regular moving
-            if env.movie_tag in tags and env.tv_show_tag not in tags:
+            elif env.movie_tag in tags and env.tv_show_tag not in tags:
                 did_handle = handle_movie(torrent)
             elif env.tv_show_tag in tags and env.movie_tag not in tags:
                 did_handle = handle_tv_show(torrent)
             else:
+                # maybe log?
                 continue
 
             # Failure

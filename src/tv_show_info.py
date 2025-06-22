@@ -17,6 +17,13 @@ class EpisodeInfo:
                 self.season == other.season and
                 self.episode == other.episode)
 
+    def serialize(self) -> str:
+        ret = ""
+        ret += f"S{self.season}"
+        if len(self.episode) > 0:
+            ret += f"E{self.episode}"
+        return ret
+
 
 def get_tv_show_info(name: str) -> Optional[EpisodeInfo]:
 

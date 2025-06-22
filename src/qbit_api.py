@@ -48,9 +48,9 @@ class TorrentInfo(TypedDict):
     popularity: float
     priority: int
     private: bool
-    progress: float  # Could also be int if it's always 0 or 1, but float is safer for progress
+    progress: float
     ratio: float
-    ratio_limit: int  # Or float
+    ratio_limit: int
     reannounce: int
     root_path: str
     save_path: str
@@ -61,7 +61,6 @@ class TorrentInfo(TypedDict):
     size: int
     state: str
     super_seeding: bool
-    # Assuming tags are a single string; if it could be a list of strings, use List[str]
     tags: str
     time_active: int
     total_size: int
