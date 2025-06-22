@@ -150,12 +150,15 @@ class QbitInterface:
         return self.__get("/api/v2/torrents/tags").json()
 
     def create_tag(self, new_tag: str):
-        payload = f"tags={new_tag}"
+        payload = {
+            "tags": new_tag
+        }
         if env.dry_run:
             return
+        encoded_payload = urlencode(payload)
         logger.log(f"Creating tag: {new_tag} in qbittorrent")
         self.__post("/api/v2/torrents/createTags",
-                    self.header_url_encoded, payload)
+                    self.header_url_encoded, encoded_payload)
 
     def rename_torrent(self, torrent: TorrentInfo, new_name: str):
         payload = {
