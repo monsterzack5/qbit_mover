@@ -29,8 +29,6 @@ def _check_for_duplicates(all_torrents: list[TorrentInfo]) -> list[RenameInfo]:
 
         name_lowercase = current_show.show_name.lower()
         if name_lowercase in torrent_map.keys():
-            # we need to actually check this is an issue
-            # if the lowercase name is the same, check if the unlowerc
             prev_torrent = torrent_map.get(name_lowercase)
             if prev_torrent is None:
                 # an odd edge case
@@ -58,7 +56,6 @@ def check_for_case_issues(qbit: QbitInterface):
 
     torrents_needing_rename = _check_for_duplicates(tv_show_torrents)
 
-    # just throw a failed tag on that bad boy
     for torrent in torrents_needing_rename:
         logger.warn(
             f"Found capitalization error: {torrent.torrent_info["name"]} is being corrected to: {torrent.new_name}"
