@@ -1,4 +1,3 @@
-- add check function to verify we have the correct tags available
 - add cli args
 - prefer cli args vs .env
 - main loop, so we run forever
@@ -11,3 +10,4 @@
 - AI Consensus
 - lots o error checking in qbit_api
 - properly url-encode in qbit
+- check target for similar torrents

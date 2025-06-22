@@ -126,7 +126,7 @@ def main():
 
             # Failure
             if not did_handle:
-                logger.warn(f"failed to handle {torrent["name"]}")
+                logger.warn(f"failed to handle {torrent['name']}")
                 qbit.append_tag_to_torrent(torrent, env.failed_tag)
                 continue
             qbit.append_tag_to_torrent(torrent, env.moved_tag)

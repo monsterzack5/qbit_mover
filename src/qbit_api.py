@@ -165,7 +165,7 @@ class QbitInterface:
         }
         encoded_payload = urlencode(payload)
 
-        logger.log(f"Renaming \"{torrent["name"]}\" to \"{new_name}\"")
+        logger.log(f"Renaming \"{torrent['name']}\" to \"{new_name}\"")
 
         if env.dry_run:
             return
@@ -186,7 +186,7 @@ class QbitInterface:
 
         encoded_payload = urlencode(payload)
 
-        logger.log(f"Adding {tag} to {torrent["name"]}")
+        logger.log(f"Adding {tag} to {torrent['name']}")
 
         rc = self.__post("/api/v2/torrents/addTags",
                          self.header_url_encoded, encoded_payload)
@@ -206,6 +206,7 @@ class QbitInterface:
 
         rc = self.__post("/api/v2/torrents/removeTags",
                          self.header_url_encoded, encoded_payload)
+        return rc.status_code == 200
 
     def get_downloaded_torrents(self) -> List[TorrentInfo]:
         all_torrents = self.get_all_torrents()

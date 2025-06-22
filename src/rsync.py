@@ -1,9 +1,11 @@
 import subprocess
 from enum import Enum
 from config import Config
+from logger import Logger
 # TODO: Maybe this should use the env instead of us needing to add the paths?
 
 env = Config()
+logger = Logger()
 
 
 class RsyncStatus(Enum):
@@ -15,6 +17,8 @@ def rsync_copy(from_str: str, to_str: str) -> RsyncStatus:
     # Add quotes just to be sure
     command = ["rsync", f"-aqs", "--mkpath",
                f"{from_str}", f"{to_str}"]
+
+    logger.log(f"rsync command: {' '.join(command)}")
 
     rc = __cmd_run(command)
     if rc == 0:
