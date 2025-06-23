@@ -56,7 +56,6 @@ def handle_movie(torrent: TorrentInfo) -> bool:
     if did_copy == RsyncStatus.FAILED:
         logger.warn(f"Failed to rsync movie |{from_path}| to |{to_path}|")
         return False
-
     return True
 
 

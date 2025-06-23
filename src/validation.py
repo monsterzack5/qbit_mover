@@ -58,6 +58,6 @@ def check_for_case_issues(qbit: QbitInterface):
 
     for torrent in torrents_needing_rename:
         logger.warn(
-            f"Found capitalization error: {torrent.torrent_info["name"]} is being corrected to: {torrent.new_name}"
+            f"Found capitalization error: {torrent.torrent_info['name']} is being corrected to: {torrent.new_name}"
         )
         qbit.rename_torrent(torrent.torrent_info, torrent.new_name)

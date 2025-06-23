@@ -5,7 +5,7 @@
 - more error checking, esp around moving stuff
 - paths
 - log level
-- handle COMPLETE torrents
+- handle mutli-season-torrents
 - AI Consensus
 - lots o error checking in qbit_api
 - check target for similar torrents
