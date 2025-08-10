@@ -19,8 +19,8 @@ def rsync_copy(from_str: str, to_str: str) -> RsyncStatus:
                f"{from_str}", f"{to_str}"]
 
     logger.log(f"rsync command: {' '.join(command)}")
-
     rc = __cmd_run(command)
+
     if rc == 0:
         return RsyncStatus.FINISHED
     return RsyncStatus.FAILED

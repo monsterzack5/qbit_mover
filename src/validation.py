@@ -42,7 +42,7 @@ def _check_for_duplicates(all_torrents: list[TorrentInfo]) -> list[RenameInfo]:
                 continue
 
             if prev_show_info.show_name != current_show.show_name:
-                new_name = f"{prev_show_info.show_name}/{current_show.serialize()}"
+                new_name = f"{prev_show_info.show_name}/{current_show.serialize_season_episode_info()}"
                 needs_rename.append((RenameInfo(new_name, elm)))
                 continue
         torrent_map[name_lowercase] = elm

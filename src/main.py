@@ -24,15 +24,21 @@ def handle_tv_show(torrent: TorrentInfo) -> bool:
     show_info = get_tv_show_info(torrent["name"])
 
     if show_info is None:
+        logger.warn("Failed to gather tv show info")
         return False
-
+    
     torrent_path = torrent["root_path"]
 
     if torrent_path.startswith("/"):
         torrent_path = torrent_path[1::]
 
     from_path = f"{env.rsync_from_path_host}:{env.rsync_from_path_prepend}/{torrent_path}/"
-    to_path = f"{env.rsync_to_path_tv_shows}/{show_info.show_name}/S{show_info.season}"
+
+    if show_info.is_multiple:
+        to_path = f"{env.rsync_to_path_tv_shows}/{show_info.show_name}"
+    else:
+        # Only append season info, if there is season info
+        to_path = f"{env.rsync_to_path_tv_shows}/{show_info.show_name}/S{show_info.season}"
 
     did_copy = rsync_copy(from_path, to_path)
 
@@ -79,14 +85,19 @@ def check_tags(qbit: QbitInterface):
 
 def handle_ai_tag(torrent: TorrentInfo, tags: set[str]) -> Optional[str]:
     new_torrent_name = None
+
+    did_try_rename = False
     if env.tv_show_tag in tags and not env.movie_tag in tags:
+        did_try_rename = True
         new_torrent_name = ai_rename(TvShowOrMovie.TvShow,
                                      torrent["name"])
     elif env.movie_tag in tags and not env.tv_show_tag in tags:
+        did_try_rename = True
         new_torrent_name = ai_rename(
             TvShowOrMovie.Movie, torrent["name"])
 
     if new_torrent_name is None:
+        logger.warn(f'Failed to AI Rename {torrent["name"]}, did we try? {did_try_rename}')
         return None
 
     return new_torrent_name
@@ -124,7 +135,7 @@ def main():
                     qbit.remove_tag_from_torrent(torrent["hash"], env.ai_tag)
 
             # Regular moving
-            elif env.movie_tag in tags and env.tv_show_tag not in tags:
+            if env.movie_tag in tags and env.tv_show_tag not in tags:
                 did_handle = handle_movie(torrent)
             elif env.tv_show_tag in tags and env.movie_tag not in tags:
                 did_handle = handle_tv_show(torrent)

@@ -30,11 +30,16 @@ Cool Show
             (contains) -> ./S02E03.The.3ndstest.Episode.mp4
 ```
 
-## Tags
-- TV_Show
-- Movie
-- Moved
-- Failed
 
+## AI Naming
+Both TV Shows and Movies can be automatically named using AI, this is done using Mistral 7B via Ollama, which I've found has always given acceptable results. To ask AI to rename your torrent, append the "AI" tag. The prompt tries to get the show title cleaned, removing any unnecessary bits of information but maintaining anything important.
+
+For movies, it tries to keep the year and special condition tags in the title, such as "Directors Cut". 
+For TV Shows:
+    - For single seasons: it should properly append /S** to the name
+    - For multiple seasons: it should append /Multiple to the name
+    - For single episodes: it should append /S\**E** to the title
+
+## Using
 The torrent must have a `TV_Show` or `Movie` tag, or else it will be ignored. After a torrent has been renamed/organized and moved, it gets the `Moved` tag, where it will be ignored from then on, as it should be finished.
 
