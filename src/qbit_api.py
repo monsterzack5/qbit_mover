@@ -87,9 +87,14 @@ class QbitInterface:
 
     def __get(self, endpoint, headers={}) -> requests.Response:
         url = f"{self.__base_url}{endpoint}"
-
-        resp = requests.get(url, headers=headers, cookies=self.__cookies)
-
+        
+        # resp: requests.Response = 0
+        resp: requests.Response = None # type: ignore
+        try:
+            resp = requests.get(url, headers=headers, cookies=self.__cookies)
+        except requests.exceptions.HTTPError as error:
+            logger.error(f"Failed GET request: {error}")
+        
         if resp.status_code != 200:
             logger.warn(
                 f"Warning: Status code != 200, Get: {url} Status Code: ${resp.status_code}")
@@ -97,9 +102,12 @@ class QbitInterface:
 
     def __post(self, endpoint, headers={}, payload={}) -> requests.Response:
         url = f"{self.__base_url}{endpoint}"
-        resp = requests.post(f"{self.__base_url}{endpoint}",
+        resp: requests.Response = None # type: ignore
+        try:
+            resp = requests.post(f"{self.__base_url}{endpoint}",
                              headers=headers, data=payload, cookies=self.__cookies)
-
+        except requests.exceptions.HTTPError as error:
+            logger.error(f"Failed POST request: {error}")
         if resp.status_code != 200:
             logger.warn(
                 f"Warning: Status code != 200, Post: {url} Status Code: {resp.status_code}")
