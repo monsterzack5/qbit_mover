@@ -1,4 +1,4 @@
-# qbit_fun (Rename pending)
+# Qubit
 
 Moves and reorganizes linux ISOs with special handling for movies and tv show seasons.
 
