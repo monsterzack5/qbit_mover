@@ -109,6 +109,15 @@ Should Become
 You should respond in JSON ONLY and ONLY respond with the new_name key. You should leave out any ` characters.
 """
 
+def is_ollama_available() -> bool:
+    new_name = ai_rename(TvShowOrMovie.Movie, "Jamie and the Giant Peach")
+    if new_name is not None:
+            logger.log("Ollama is up and reachable")
+    else:
+        logger.warn("Ollama could not be reached, disabling AI features and functions.")
+
+    return new_name is not None
+
 
 def ai_rename(content_type: TvShowOrMovie, torrent_name: str) -> Optional[str]:
     payload = {
@@ -128,8 +137,12 @@ def ai_rename(content_type: TvShowOrMovie, torrent_name: str) -> Optional[str]:
 
     logger.log(f"Running {AI_MODEL}, type = {content_type}")
 
-    resp = requests.post(env.ollama_url, json=payload, headers=headers)
-
+    try:
+        resp = requests.post(env.ollama_url, json=payload, headers=headers)
+    except:
+        logger.error("Could not reach ollama endpoint")
+        return None
+    
     if resp.status_code != 200:
         logger.warn(
             f"Ollama called failed with status code: {resp.status_code}")

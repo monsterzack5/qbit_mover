@@ -14,6 +14,10 @@ class RsyncStatus(Enum):
 
 
 def rsync_copy(from_str: str, to_str: str) -> RsyncStatus:
+    if len(from_str) == 0 or len(to_str) == 0:
+        logger.error("Attempted passing empty path rsync")
+        return RsyncStatus.FAILED
+
     # Add quotes just to be sure
     command = ["rsync", f"-aqs", "--mkpath",
                f"{from_str}", f"{to_str}"]
