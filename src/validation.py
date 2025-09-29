@@ -36,7 +36,7 @@ def _check_for_duplicates(all_torrents: list[TorrentInfo]) -> list[RenameInfo]:
                     "Failed to capture duplicate torrent and rename")
                 continue
 
-            prev_show_info = get_tv_show_info(prev_torrent["name"])
+            prev_show_info = get_tv_show_info(prev_torrent['name'])
 
             if prev_show_info is None:
                 continue

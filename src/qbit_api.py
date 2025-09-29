@@ -134,7 +134,7 @@ class QbitInterface:
         filtered: List[TorrentInfo] = []
 
         for torrent in torrents:
-            all_tags = self.convert_tags_to_array(torrent["tags"])
+            all_tags = self.convert_tags_to_array(torrent['tags'])
             if not self.env.moved_tag in all_tags and not self.env.failed_tag in all_tags:
                 filtered.append(torrent)
 
@@ -170,7 +170,7 @@ class QbitInterface:
 
     def rename_torrent(self, torrent: TorrentInfo, new_name: str):
         payload = {
-            "hash": torrent["hash"],
+            "hash": torrent['hash'],
             "name": new_name
         }
         encoded_payload = urlencode(payload)
@@ -187,7 +187,7 @@ class QbitInterface:
         # hashes=8c212779b4abde7c6bc608063a0d008b7e40ce32|284b83c9c7935002391129fd97f43db5d7cc2ba0&tags=TagName1,TagName2
 
         payload = {
-            "hashes": torrent["hash"],
+            "hashes": torrent['hash'],
             "tags":   tag
         }
 
@@ -225,6 +225,6 @@ class QbitInterface:
         bad_state = set(["stalledDL", "downloading", "metaDL", "error",
                         "moving", "checkingResumeData", "missingFiles", "unknown"])
         for torrent in all_torrents:
-            if torrent["state"] not in bad_state:
+            if torrent['state'] not in bad_state:
                 downloaded_torrents.append(torrent)
         return downloaded_torrents
