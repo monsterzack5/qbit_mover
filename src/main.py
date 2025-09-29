@@ -105,7 +105,7 @@ def handle_ai_tag(torrent: TorrentInfo, tags: set[str]) -> Optional[str]:
             TvShowOrMovie.Movie, torrent['name'])
 
     if new_torrent_name is None:
-        logger.warn(f'Failed to AI Rename {torrent['name']}, did we try? {did_try_rename}')
+        logger.warn(f"Failed to AI Rename {torrent['name']}, did we try? {did_try_rename}")
         return None
 
     return new_torrent_name
